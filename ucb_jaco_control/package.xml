@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>ucb_jaco_control</name>
+  <version>0.0.0</version>
+  <description>The ucb_jaco_control package</description>
+
+  <maintainer email="eratner@berkeley.edu">Ellis Ratner</maintainer>
+  <maintainer email="ravi.pandya@berkeley.edu">Ravi Pandya</maintainer>
+
+  <license>TODO</license>
+
+  <url type="website">https://github.com/eratner/ucb-jaco-control</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>trajectory_msgs</run_depend>
+
+  <export>
+  </export>
+</package>
