@@ -10,9 +10,13 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  std_msgs
   sensor_msgs
   trajectory_msgs
+  controller_interface
 )
+
+set(UCB_JACO_CONTROL_ROS_LIB ucb_jaco_control_ros)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -104,10 +108,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ucb_jaco_control
-#  CATKIN_DEPENDS roscpp rospy
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES ${UCB_JACO_CONTROL_ROS_LIB}
+  CATKIN_DEPENDS controller_interface
 )
 
 ###########
@@ -117,7 +120,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -125,6 +128,12 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/ucb_jaco_control.cpp
 # )
+
+add_library(${UCB_JACO_CONTROL_ROS_LIB}
+  src/test_controller_ros.cpp
+)
+
+target_link_libraries(${UCB_JACO_CONTROL_ROS_LIB} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -171,18 +180,21 @@ target_link_libraries(torque_control_test_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS ${UCB_JACO_CONTROL_ROS_LIB}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
+
+install(FILES ${UCB_JACO_CONTROL_ROS_LIB}_plugins.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

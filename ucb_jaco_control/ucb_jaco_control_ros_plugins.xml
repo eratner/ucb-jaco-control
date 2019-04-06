@@ -1,0 +1,7 @@
+<library path="lib/libucb_jaco_control_ros">
+  <class name="ucb_jaco_control/TestControllerROS" type="ucb_jaco_control::TestControllerROS" base_class_type="controller_interface::ControllerBase">
+    <description>
+      Test controller. 
+    </description>
+  </class>  
+</library>
