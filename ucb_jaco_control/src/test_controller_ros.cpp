@@ -20,7 +20,7 @@ bool TestControllerROS::init(hardware_interface::EffortJointInterface* hw,
   std::vector<std::string> joint_names;
   if (!nh.getParam("joints", joint_names))
   {
-    ROS_ERROR("Failed to get joint names from parameter server!")
+    ROS_ERROR("Failed to get joint names from parameter server!");
     return false;
   }
 

@@ -16,7 +16,13 @@ find_package(catkin REQUIRED COMPONENTS
   controller_interface
 )
 
-set(UCB_JACO_CONTROL_ROS_LIB ucb_jaco_control_ros)
+find_package(cmake_modules REQUIRED)
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+add_definitions(${EIGEN_DEFINITIONS})
+
+set(UCB_JACO_CONTROL_ROS ucb_jaco_control_ros)
+set(UCB_JACO_CONTROL ucb_jaco_control)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -109,7 +115,7 @@ set(UCB_JACO_CONTROL_ROS_LIB ucb_jaco_control_ros)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${UCB_JACO_CONTROL_ROS_LIB}
+  LIBRARIES ${UCB_JACO_CONTROL_ROS} ${UCB_JACO_CONTROL}
   CATKIN_DEPENDS controller_interface
 )
 
@@ -129,11 +135,16 @@ include_directories(
 #   src/${PROJECT_NAME}/ucb_jaco_control.cpp
 # )
 
-add_library(${UCB_JACO_CONTROL_ROS_LIB}
+# Library of ROS control plugins.
+add_library(${UCB_JACO_CONTROL_ROS}
   src/test_controller_ros.cpp
 )
+target_link_libraries(${UCB_JACO_CONTROL_ROS} ${catkin_LIBRARIES})
 
-target_link_libraries(${UCB_JACO_CONTROL_ROS_LIB} ${catkin_LIBRARIES})
+# Library containing core controllers.
+#add_library(${UCB_JACO_CONTROL} INTERFACE)
+#target_include_directories(${UCB_JACO_CONTROL} INTERFACE include/${UCB_JACO_CONROL})
+#target_link_libraries(${UCB_JACO_CONTROL} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -180,7 +191,7 @@ target_link_libraries(torque_control_test_node
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${UCB_JACO_CONTROL_ROS_LIB}
+install(TARGETS ${UCB_JACO_CONTROL_ROS}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -193,7 +204,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
   PATTERN ".svn" EXCLUDE
 )
 
-install(FILES ${UCB_JACO_CONTROL_ROS_LIB}_plugins.xml
+install(FILES ${UCB_JACO_CONTROL_ROS}_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
@@ -215,3 +226,9 @@ install(FILES ${UCB_JACO_CONTROL_ROS_LIB}_plugins.xml
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_add_gtest(pid_regulation_controller_test test/test_pid_regulation_controller.cpp)
+if (TARGET pid_regulation_controller_test)
+  #target_link_libraries(pid_regulation_controller_test ${UCB_JACO_CONTROL})
+  target_link_libraries(pid_regulation_controller_test ${catkin_LIBRARIES})
+endif()
