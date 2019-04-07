@@ -5,6 +5,9 @@ namespace ucb_jaco_control
 {
 
 TestControllerROS::TestControllerROS()
+  : controller_({100, 100, 100, 100, 100, 100, 100},
+                {50, 50, 50, 50, 50, 50, 50},
+                {0, 0, 0, 0, 0, 0, 0})
 {
 }
 
@@ -27,19 +30,30 @@ bool TestControllerROS::init(hardware_interface::EffortJointInterface* hw,
   for (int i = 0; i < joint_names.size(); ++i)
   {
     ROS_INFO_STREAM("Getting handle for joint " << joint_names[i]);
-    joint_state_.push_back(hw->getHandle(joint_names[i]));
+    joint_handle_.push_back(hw->getHandle(joint_names[i]));
   }
 
   return true;
 }
 
-void TestControllerROS::starting(ros::Time &time)
+void TestControllerROS::starting(ros::Time& time)
 {
   ROS_INFO_STREAM("Starting test controller at time " << time);
+
+  controller_.reset();
 }
 
 void TestControllerROS::update(const ros::Time& time, const ros::Duration& period)
 {
+  PIDRegulationController<7>::StateVector state;
+  for (int i = 0; i < 7; ++i)
+    state(i) = joint_handle_[i].getPosition();
+
+  const double dt = period.toSec();
+  PIDRegulationController<7>::ControlVector control = controller_.getControl(state, dt);
+
+  for (int i = 0; i < 7; ++i)
+    joint_handle_[i].setCommand(control(i));
 }
 
 void TestControllerROS::stopping(const ros::Time& time)

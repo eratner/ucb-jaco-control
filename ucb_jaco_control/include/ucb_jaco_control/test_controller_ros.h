@@ -3,6 +3,7 @@
 
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
+#include <ucb_jaco_control/pid_regulation_controller.h>
 
 namespace ucb_jaco_control
 {
@@ -25,8 +26,12 @@ public:
   void stopping(const ros::Time& time);
 
 private:
-  std::vector<hardware_interface::JointStateHandle> joint_state_;
-  
+  std::vector<hardware_interface::JointHandle> joint_handle_;
+
+  PIDRegulationController<7>                   controller_;
+
+  ros::Publisher                               error_pub_;
+
 };
 
 } // namespace ucb_jaco_control
