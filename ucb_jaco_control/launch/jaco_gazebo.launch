@@ -1,0 +1,27 @@
+<launch>
+  <!-- Launch Gazebo simulator -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find kinova_gazebo)/worlds/jaco.world" />
+    <arg name="debug" value="false" />
+    <arg name="gui" value="false" />
+    <arg name="paused" value="false" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="headless" value="true" />
+  </include>
+
+  <!-- Load the URDF onto the parameter server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find kinova_description)/urdf/j2s7s300_standalone.xacro'" />
+  <!-- Load the robot model into Gazebo -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -model j2s7s300 -param robot_description"/>
+
+  <!-- Load the controllers -->
+  <include file="$(find ucb_jaco_control)/launch/test_controller.launch" />
+
+  <!-- Joint states to TF for visualization of robot in RViz -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">    
+    <remap from="/joint_states" to="/j2s7s300/joint_states" />    
+  </node>
+</launch>

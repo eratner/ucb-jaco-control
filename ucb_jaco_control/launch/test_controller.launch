@@ -1,0 +1,9 @@
+<launch>
+  <!-- Load the controller configurations from YAML file onto the parameter server -->
+  <rosparam file="$(find ucb_jaco_control)/config/jaco_test_controller_config.yaml" command="load" />
+  <rosparam file="$(find kinova_control)/config/j2s7s300_control.yaml" command="load"/>  
+
+  <!-- Load the controller -->
+  <node name="jaco_test_controller" pkg="controller_manager" type="spawner" 
+    output="screen" ns="j2s7s300" args="test_controller_ros joint_state_controller" />    
+</launch>

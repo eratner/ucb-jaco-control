@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   trajectory_msgs
   controller_interface
+  dynamic_reconfigure
 )
 
 find_package(cmake_modules REQUIRED)
@@ -104,6 +105,10 @@ set(UCB_JACO_CONTROL ucb_jaco_control)
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  config/PIDGains.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -140,6 +145,7 @@ add_library(${UCB_JACO_CONTROL_ROS}
   src/test_controller_ros.cpp
 )
 target_link_libraries(${UCB_JACO_CONTROL_ROS} ${catkin_LIBRARIES})
+add_dependencies(${UCB_JACO_CONTROL_ROS} ${PROJECT_NAME}_gencfg)
 
 # Library containing core controllers.
 #add_library(${UCB_JACO_CONTROL} INTERFACE)
