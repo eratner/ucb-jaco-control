@@ -19,6 +19,7 @@
   <build_depend>trajectory_msgs</build_depend>
   <build_depend>controller_interface</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>angles</build_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
@@ -26,6 +27,7 @@
   <run_depend>trajectory_msgs</run_depend>
   <run_depend>controller_interface</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>angles</run_depend>
 
   <export>
     <controller_interface plugin="${prefix}/ucb_jaco_control_ros_plugins.xml"/>
