@@ -7,8 +7,9 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <dynamic_reconfigure/server.h>
 #include <ucb_jaco_control/PIDGainsConfig.h>
+#include <cmath>
 
-#define P_GAIN 5.0
+#define P_GAIN 50.0
 #define D_GAIN 0.0
 #define I_GAIN 0.0
 

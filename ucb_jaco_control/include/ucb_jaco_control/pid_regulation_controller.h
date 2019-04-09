@@ -3,6 +3,7 @@
 
 #include <ucb_jaco_control/state_feedback_controller.h>
 #include <array>
+#include <angles/angles.h> // TODO: Would be nice not to depend on ROS packages here.
 
 namespace ucb_jaco_control
 {
@@ -17,7 +18,8 @@ public:
   PIDRegulationController(const std::array<double, StateDim>& proportional_gain,
                           const std::array<double, StateDim>& derivative_gain,
                           const std::array<double, StateDim>& integral_gain,
-                          const StateVector& setpoint = StateVector::Zero())
+                          const StateVector& setpoint = StateVector::Zero(),
+                          bool wrap_angles = false)
     : setpoint_(setpoint)
   {
     setProportionalGain(proportional_gain);
@@ -93,13 +95,13 @@ public:
   ControlVector getControl(const StateVector& state, double dt)
   {
     // Compute the error.
-    StateVector error = setpoint_ - state;
+    StateVector error = diff(state, setpoint_);
 
     // Update the integral.
     integral_ += dt * error;
 
     ControlVector control = proportional_gain_ * error -
-      derivative_gain_ * ((error - last_error_) / dt) -
+      derivative_gain_ * (diff(last_error_, error) / dt) -
       integral_gain_ * integral_;
 
     // Update the last error.
@@ -109,11 +111,26 @@ public:
   }
 
 protected:
+  StateVector diff(const StateVector &a, const StateVector &b) const
+  {
+    StateVector d;
+    if (wrap_angles_)
+    {
+      for (int i = 0; i < StateDim; ++i)
+        d(i) = angles::shortest_angular_distance(a(i), b(i));
+    }
+    else
+      d = b - a;
+
+    return d;
+  }
+
   Eigen::DiagonalMatrix<double, StateDim> proportional_gain_; // Proportional gain matrix.
   Eigen::DiagonalMatrix<double, StateDim> derivative_gain_;   // Derivative gain matrix.
   Eigen::DiagonalMatrix<double, StateDim> integral_gain_;     // Integral gain matrix.
 
   StateVector                             setpoint_;          // Setpoint to regulate to.
+  bool                                    wrap_angles_;       // If set, wraps values to [-pi, pi).
 
   StateVector                             integral_;
   StateVector                             last_error_;

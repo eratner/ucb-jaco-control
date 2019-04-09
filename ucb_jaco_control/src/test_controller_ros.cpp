@@ -43,12 +43,19 @@ bool TestControllerROS::init(hardware_interface::EffortJointInterface* hw,
     }
   }
 
+  // TODO: Implement a topic/service for the commanded setpoint.
+  PIDRegulationController<7>::StateVector setpoint;
+  setpoint << 0.0, M_PI_2, 0.0, M_PI_2, 0.0, M_PI_2, 0.0;
+  controller_.setSetpoint(setpoint);
+
   // Publisher for the errors.
   error_pub_ = nh.advertise<std_msgs::Float64MultiArray>("errors", 1);
 
   // Dynamic reconfigure for the PID gains.
   server_ = new dynamic_reconfigure::Server<PIDGainsConfig>(nh);
   server_->setCallback(boost::bind(&TestControllerROS::pidGainsCallback, this, _1, _2));
+
+  ROS_INFO_STREAM("Setpoint is " << controller_.getSetpoint());
 
   return true;
 }
