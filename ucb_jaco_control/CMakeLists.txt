@@ -233,3 +233,9 @@ if (TARGET pid_regulation_controller_test)
   #target_link_libraries(pid_regulation_controller_test ${UCB_JACO_CONTROL})
   target_link_libraries(pid_regulation_controller_test ${catkin_LIBRARIES})
 endif()
+
+catkin_add_gtest(constant_trajectory_test test/test_constant_trajectory.cpp)
+if (TARGET constant_trajectory_test)
+  target_link_libraries(constant_trajectory_test ${catkin_LIBRARIES})
+endif()
+

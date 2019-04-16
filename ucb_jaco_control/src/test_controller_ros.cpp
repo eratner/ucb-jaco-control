@@ -7,7 +7,9 @@ namespace ucb_jaco_control
 TestControllerROS::TestControllerROS()
   : controller_({P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN},
                 {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
-                {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN})
+                {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN},
+                PIDRegulationController<7>::StateVector::Zero(),
+                true)
 {
 }
 
