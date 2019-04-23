@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   trajectory_msgs
   controller_interface
   dynamic_reconfigure
+  kdl_parser
 )
 
 find_package(cmake_modules REQUIRED)
@@ -237,5 +238,10 @@ endif()
 catkin_add_gtest(constant_trajectory_test test/test_constant_trajectory.cpp)
 if (TARGET constant_trajectory_test)
   target_link_libraries(constant_trajectory_test ${catkin_LIBRARIES})
+endif()
+
+catkin_add_gtest(robot_dynamics_test test/test_robot_dynamics.cpp)
+if (TARGET robot_dynamics_test)
+  target_link_libraries(robot_dynamics_test ${catkin_LIBRARIES})
 endif()
 
