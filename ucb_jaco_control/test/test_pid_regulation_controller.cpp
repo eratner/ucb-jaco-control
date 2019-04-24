@@ -1,6 +1,10 @@
 #include <ucb_jaco_control/pid_regulation_controller.h>
+#include <extern/matplotlibcpp/matplotlibcpp.h>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <vector>
+
+namespace plt = matplotlibcpp;
 
 TEST(PIDRegulationController, testConstruction)
 {
@@ -37,8 +41,16 @@ TEST(PIDRegulationController, testSingleIntegrator)
 
   ucb_jaco_control::PIDRegulationController<N> controller({1.75}, {0.25}, {0.0}, setpoint);
 
+  std::vector<double> states;
+  std::vector<double> times;
+  std::vector<double> setpoints;
+
   for (int t = 0; t < T; ++t)
   {
+    states.push_back(state(0));
+    times.push_back(t * dt);
+    setpoints.push_back(setpoint(0));
+
     std::cout << "t = " << static_cast<double>(t) * dt << ", state = " << state << std::endl;
 
     ucb_jaco_control::PIDRegulationController<N>::ControlVector control =
@@ -50,6 +62,11 @@ TEST(PIDRegulationController, testSingleIntegrator)
     // Update the state.
     state += dt * control;
   }
+
+  plt::named_plot("State", times, states);
+  plt::named_plot("Setpoint", times, setpoints);
+  plt::legend();
+  plt::show();
 }
 
 int main(int argc, char *argv[])

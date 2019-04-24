@@ -232,7 +232,9 @@ install(FILES ${UCB_JACO_CONTROL_ROS}_plugins.xml
 catkin_add_gtest(pid_regulation_controller_test test/test_pid_regulation_controller.cpp)
 if (TARGET pid_regulation_controller_test)
   #target_link_libraries(pid_regulation_controller_test ${UCB_JACO_CONTROL})
-  target_link_libraries(pid_regulation_controller_test ${catkin_LIBRARIES})
+  find_package(PythonLibs 2.7)
+  target_include_directories(pid_regulation_controller_test PRIVATE ${PYTHON_INCLUDE_DIRS})
+  target_link_libraries(pid_regulation_controller_test ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 endif()
 
 catkin_add_gtest(constant_trajectory_test test/test_constant_trajectory.cpp)

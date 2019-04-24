@@ -1,0 +1,3 @@
+[submodule "ucb_jaco_control/include/extern/matplotlibcpp"]
+	path = ucb_jaco_control/include/extern/matplotlibcpp
+	url = https://github.com/lava/matplotlib-cpp.git
