@@ -14,17 +14,17 @@ public:
   {
   }
 
-  Eigen::Matrix<double, Dim, 1> getDesiredPosition(double t)
+  Eigen::Matrix<double, Dim, 1> getDesiredPosition(double t) const
   {
     return setpoint_;
   }
 
-  Eigen::Matrix<double, Dim, 1> getDesiredVelocity(double t)
+  Eigen::Matrix<double, Dim, 1> getDesiredVelocity(double t) const
   {
     return Eigen::Matrix<double, Dim, 1>::Zero();
   }
 
-  Eigen::Matrix<double, Dim, 1> getDesiredAcceleration(double t)
+  Eigen::Matrix<double, Dim, 1> getDesiredAcceleration(double t) const
   {
     return Eigen::Matrix<double, Dim, 1>::Zero();
   }
