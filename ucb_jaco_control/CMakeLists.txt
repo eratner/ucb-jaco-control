@@ -247,3 +247,10 @@ if (TARGET robot_dynamics_test)
   target_link_libraries(robot_dynamics_test ${catkin_LIBRARIES})
 endif()
 
+catkin_add_gtest(buffer_test test/test_buffer.cpp)
+if (TARGET buffer_test)
+  set(CMAKE_BUILD_TYPE Debug)
+  target_link_libraries(buffer_test ${catkin_LIBRARIES})
+endif()
+
+
