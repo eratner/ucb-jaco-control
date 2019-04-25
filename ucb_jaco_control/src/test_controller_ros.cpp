@@ -6,8 +6,8 @@ namespace ucb_jaco_control
 
 TestControllerROS::TestControllerROS()
   : controller_({P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN},
-                {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
                 {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN},
+                {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
                 PIDRegulationController<7>::StateVector::Zero(),
                 true)
 {
@@ -71,9 +71,11 @@ void TestControllerROS::starting(ros::Time& time)
 
 void TestControllerROS::update(const ros::Time& time, const ros::Duration& period)
 {
-  PIDRegulationController<7>::StateVector state;
+  PIDRegulationController<7>::AugmentedStateVector state;
   for (int i = 0; i < 7; ++i)
     state(i) = joint_handle_[i].getPosition();
+  for (int i = 0; i < 7; ++i)
+    state(i + 7) = joint_handle_[i].getVelocity();
 
   const double dt = period.toSec();
   PIDRegulationController<7>::ControlVector control = controller_.getControl(state, dt);

@@ -36,18 +36,18 @@ TEST(PIDRegulationController, testSingleIntegrator)
   ucb_jaco_control::PIDRegulationController<N>::StateVector setpoint;
   setpoint << 0;
 
-  ucb_jaco_control::PIDRegulationController<N>::StateVector state;
-  state << 1;
+  ucb_jaco_control::PIDRegulationController<N>::AugmentedStateVector state;
+  state << 1, 0;
 
-  ucb_jaco_control::PIDRegulationController<N> controller({1.75}, {0.25}, {0.0}, setpoint);
+  ucb_jaco_control::PIDRegulationController<N> controller({1.75}, {0.0}, {0.25}, setpoint);
 
-  std::vector<double> states;
+  std::vector<double> pos;
   std::vector<double> times;
   std::vector<double> setpoints;
 
   for (int t = 0; t < T; ++t)
   {
-    states.push_back(state(0));
+    pos.push_back(state(0));
     times.push_back(t * dt);
     setpoints.push_back(setpoint(0));
 
@@ -60,10 +60,11 @@ TEST(PIDRegulationController, testSingleIntegrator)
     // std::cout << "  control = " << control << std::endl;
 
     // Update the state.
-    state += dt * control;
+    state(0) += dt * control(0);
+    state(1) = control(0);
   }
 
-  plt::named_plot("State", times, states);
+  plt::named_plot("State", times, pos);
   plt::named_plot("Setpoint", times, setpoints);
   plt::legend();
   plt::show();
