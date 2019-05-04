@@ -30,10 +30,12 @@ public:
   {
     const double &q2 = pos(1);
     Matrix inertia_matrix;
-    inertia_matrix << (m1_ + m2_) * pow(l1_, 2) + m2_ * pow(l2_, 2) + 2 * m2_ * l1_ * l2_ * cos(q2),
-      m2_ * pow(l2_, 2) + m2_ * l1_ * l2_ * cos(q2),
-      m2_ * pow(l2_, 2) + m2_ * l1_ * l2_ * cos(q2),
-      m2_ * pow(l2_, 2);
+    inertia_matrix(0, 0) =
+      (m1_ + m2_) * pow(l1_, 2) + m2_ * pow(l2_, 2) + 2 * m2_ * l1_ * l2_ * cos(q2);
+    inertia_matrix(0, 1) = m2_ * pow(l2_, 2) + m2_ * l1_ * l2_ * cos(q2);
+    inertia_matrix(1, 0) = m2_ * pow(l2_, 2) + m2_ * l1_ * l2_ * cos(q2);
+    inertia_matrix(1, 1) = m2_ * pow(l2_, 2);
+
     return inertia_matrix;
   }
 
@@ -46,8 +48,8 @@ public:
     const double &dq2 = vel(1);
 
     Vector coriolis_centripetal;
-    coriolis_centripetal << -m2_ * l1_ * l2_ * (2 * dq1 * dq2 + pow(dq2, 2)) * sin(q2),
-      m2_ * l1_ * l2_ * pow(dq1, 2) * sin(q2);
+    coriolis_centripetal(0) = -m2_ * l1_ * l2_ * (2 * dq1 * dq2 + pow(dq2, 2)) * sin(dq2);
+    coriolis_centripetal(1) = m2_ * l1_ * l2_ * pow(dq1, 2) * sin(q2);
 
     return coriolis_centripetal;
   }
@@ -58,8 +60,8 @@ public:
     const float &q2 = pos(1, 0);
 
     Vector gravity;
-    gravity << (m1_ + m2_) * g_ * l1_ * cos(q1) + m2_ * g_ * l2_ * cos(q1 + q2),
-      m2_ * g_ * l2_ * cos(q1 + q2);
+    gravity(0) = (m1_ + m2_) * g_ * l1_ * cos(q1) + m2_ * g_ * l2_ * cos(q1 + q2);
+    gravity(1) = m2_ * g_ * l2_ * cos(q1 + q2);
 
     return gravity;
   }

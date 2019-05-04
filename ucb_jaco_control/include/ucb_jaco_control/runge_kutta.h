@@ -1,5 +1,5 @@
-#ifndef UCB_JACO_CONTROL_RUNGE_KUTTA_H_
-#define UCB_JACO_CONTROL_RUNGE_KUTTA_H_
+#ifndef UCB_JACO_CONTROL_RUNGE_KUTTA_H
+#define UCB_JACO_CONTROL_RUNGE_KUTTA_H
 
 #include <Eigen/Eigen>
 #include <functional>
@@ -65,4 +65,4 @@ private:
 
 }  // namespace ucb_jaco_control
 
-#endif  // UCB_JACO_CONTROL_RUNGE_KUTTA_H_
+#endif  // UCB_JACO_CONTROL_RUNGE_KUTTA_H

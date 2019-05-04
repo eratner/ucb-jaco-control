@@ -14,7 +14,6 @@ public:
   typedef Eigen::Matrix<double, DOF, 1>   Vector;
 
   virtual Matrix getInertiaMatrix(const Vector& pos) = 0;
-
   virtual Vector getCoriolisVector(const Vector& pos,
                                    const Vector& vel) = 0;
 
