@@ -22,6 +22,8 @@ find_package(cmake_modules REQUIRED)
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 add_definitions(${EIGEN_DEFINITIONS})
+find_package(PythonLibs 2.7)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 set(UCB_JACO_CONTROL_ROS ucb_jaco_control_ros)
 set(UCB_JACO_CONTROL ucb_jaco_control)
@@ -148,6 +150,9 @@ add_library(${UCB_JACO_CONTROL_ROS}
 target_link_libraries(${UCB_JACO_CONTROL_ROS} ${catkin_LIBRARIES})
 add_dependencies(${UCB_JACO_CONTROL_ROS} ${PROJECT_NAME}_gencfg)
 
+# add_executable(test_robot_dynamics_node src/test_robot_dynamics_node.cpp)
+# target_link_libraries(test_robot_dynamics_node ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+
 # Library containing core controllers.
 #add_library(${UCB_JACO_CONTROL} INTERFACE)
 #target_include_directories(${UCB_JACO_CONTROL} INTERFACE include/${UCB_JACO_CONROL})
@@ -232,8 +237,8 @@ install(FILES ${UCB_JACO_CONTROL_ROS}_plugins.xml
 catkin_add_gtest(pid_regulation_controller_test test/test_pid_regulation_controller.cpp)
 if (TARGET pid_regulation_controller_test)
   #target_link_libraries(pid_regulation_controller_test ${UCB_JACO_CONTROL})
-  find_package(PythonLibs 2.7)
-  target_include_directories(pid_regulation_controller_test PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+  #target_include_directories(pid_regulation_controller_test PRIVATE ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(pid_regulation_controller_test ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 endif()
 

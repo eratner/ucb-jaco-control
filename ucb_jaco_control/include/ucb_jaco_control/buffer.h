@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 
 namespace ucb_jaco_control
 {
@@ -29,7 +30,7 @@ public:
       DataNode *to_delete = front_;
       front_->next->prev = nullptr;
       front_ = front_->next;
-      
+
       delete to_delete;
       to_delete = nullptr;
       --count_;
@@ -62,6 +63,22 @@ public:
     }
 
     return data;
+  }
+
+  const DataType& back() const
+  {
+    if (count_ == 0)
+      throw std::out_of_range("Buffer is empty!");
+
+    return back_->data;
+  }
+
+  const DataType& front() const
+  {
+    if (count_ == 0)
+      throw std::out_of_range("Buffer is empty!");
+
+    return front_->data;
   }
 
   int count() const
