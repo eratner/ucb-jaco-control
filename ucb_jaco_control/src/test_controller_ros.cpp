@@ -6,9 +6,12 @@ namespace ucb_jaco_control
 
 TestControllerROS::TestControllerROS()
   : controller_({P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN},
-                {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
                 {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN},
-                PIDRegulationController<7>::StateVector::Zero(),
+                {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
+                ucb_jaco_control::SinusoidTrajectory<7> trajectory(
+                  {AMPLITUDE, AMPLITUDE, AMPLITUDE, AMPLITUDE, AMPLITUDE, AMPLITUDE, AMPLITUDE},
+                  {FREQUENCY, FREQUENCY, FREQUENCY, FREQUENCY, FREQUENCY, FREQUENCY, FREQUENCY}, 
+                  {PHASE, PHASE, PHASE, PHASE, PHASE, PHASE, PHASE}),
                 true)
 {
 }

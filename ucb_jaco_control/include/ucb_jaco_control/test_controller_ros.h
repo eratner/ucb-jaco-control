@@ -13,6 +13,10 @@
 #define D_GAIN 0.0
 #define I_GAIN 0.0
 
+#define AMPLITUDE 1.0
+#define FREQUENCY 1.0
+#define PHASE     1.0
+
 namespace ucb_jaco_control
 {
 
@@ -38,7 +42,8 @@ private:
 
   std::vector<hardware_interface::JointHandle> joint_handle_;
 
-  PIDRegulationController<7>                   controller_;
+  // PIDRegulationController<7>                   controller_;
+  PIDTrajectoryController<7>                   controller_;
 
   ros::Publisher                               error_pub_;
 
