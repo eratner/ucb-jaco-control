@@ -10,11 +10,11 @@ template <unsigned int Dim>
 class Trajectory
 {
 public:
-  virtual Eigen::Matrix<double, Dim, 1> getDesiredPosition(double t) = 0;
+  virtual Eigen::Matrix<double, Dim, 1> getPosition(double t) = 0;
 
-  virtual Eigen::Matrix<double, Dim, 1> getDesiredVelocity(double t) = 0;
+  virtual Eigen::Matrix<double, Dim, 1> getVelocity(double t) = 0;
 
-  virtual Eigen::Matrix<double, Dim, 1> getDesiredAcceleration(double t) = 0;
+  virtual Eigen::Matrix<double, Dim, 1> getAcceleration(double t) = 0;
 
 };
 

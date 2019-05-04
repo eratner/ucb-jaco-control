@@ -131,8 +131,8 @@ protected:
   }
 
   Eigen::DiagonalMatrix<double, StateDim> proportional_gain_; // Proportional gain matrix.
-  Eigen::DiagonalMatrix<double, StateDim> derivative_gain_;   // Derivative gain matrix.
   Eigen::DiagonalMatrix<double, StateDim> integral_gain_;     // Integral gain matrix.
+  Eigen::DiagonalMatrix<double, StateDim> derivative_gain_;   // Derivative gain matrix.
 
   StateVector                             setpoint_;          // Setpoint to regulate to.
   bool                                    wrap_angles_;       // If set, wraps values to [-pi, pi).

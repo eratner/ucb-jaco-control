@@ -258,4 +258,8 @@ if (TARGET buffer_test)
   target_link_libraries(buffer_test ${catkin_LIBRARIES})
 endif()
 
-
+catkin_add_gtest(runge_kutta_test test/test_runge_kutta.cpp)
+if (TARGET runge_kutta_test)
+  set(CMAKE_BUILD_TYPE Debug)
+  target_link_libraries(runge_kutta_test ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+endif()

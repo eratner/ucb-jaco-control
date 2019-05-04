@@ -13,7 +13,7 @@ public:
   typedef Eigen::Matrix<double, StateDim, 1>   StateVector;
   typedef Eigen::Matrix<double, ControlDim, 1> ControlVector;
 
-  virtual ControlVector getControl(const StateVector& state, double dt) = 0;
+  virtual ControlVector getControl(const StateVector& state, double t) = 0;
 
 };
 
