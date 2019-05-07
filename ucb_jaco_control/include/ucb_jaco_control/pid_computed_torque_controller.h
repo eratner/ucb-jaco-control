@@ -83,10 +83,7 @@ protected:
     Eigen::Matrix<double, Dim, 1> pos = state.block(0, 0, Dim, 1);
     Eigen::Matrix<double, Dim, 1> vel = state.block(Dim, 0, Dim, 1);
 
-    // Eigen::Matrix<double, Dim, 1> err       = this->desired_trajectory_->getPosition(t) - pos;
-    Eigen::Matrix<double, Dim, 1> err;
-    for (int i = 0; i < Dim; ++i)
-      err(i) = angles::shortest_angular_distance(this->desired_trajectory_->getPosition(t)(i), pos(i));
+    Eigen::Matrix<double, Dim, 1> err       = this->desired_trajectory_->getPosition(t) - pos;
     Eigen::Matrix<double, Dim, 1> err_deriv = this->desired_trajectory_->getVelocity(t) - vel;
 
     // Update the integral of the error.
