@@ -1,5 +1,5 @@
-#ifndef UCB_JACO_CONTROL_SINUSOID_TRAJECTORY_H
-#define UCB_JACO_CONTROL_SINUSOID_TRAJECTORY_H
+#ifndef UCB_JACO_CONTROL_SINUSOIDAL_TRAJECTORY_H
+#define UCB_JACO_CONTROL_SINUSOIDAL_TRAJECTORY_H
 
 #include <ucb_jaco_control/trajectory.h>
 #include <cmath>
@@ -8,26 +8,26 @@ namespace ucb_jaco_control
 {
 
 template <unsigned int Dim>
-class SinusoidTrajectory : public Trajectory<Dim>
+class SinusoidalTrajectory : public Trajectory<Dim>
 {
 public:
-  SinusoidTrajectory(const std::array<double, Dim>& amplitude,
-                     const std::array<double, Dim>& frequency,
-                     const std::array<double, Dim>& phase)
+  SinusoidalTrajectory(const std::array<double, Dim>& amplitude,
+                       const std::array<double, Dim>& frequency,
+                       const std::array<double, Dim>& phase)
     : amplitude_(amplitude), frequency_(frequency), phase_(phase)
   {
   }
 
-  Eigen::Matrix<double, Dim, 1> getPosition(double t) const
+  Eigen::Matrix<double, Dim, 1> getPosition(double t)
   {
-    Eigen::Matrix<double, Dim, 1> pos = Eigen::Matrix<double, StateDim, 1>::Zero();
+    Eigen::Matrix<double, Dim, 1> pos = Eigen::Matrix<double, Dim, 1>::Zero();
     for (int i = 0; i < Dim; i++)
       pos(i) = amplitude_[i] * sin(frequency_[i] * t + phase_[i]);
-    
+
     return pos;
   }
 
-  Eigen::Matrix<double, Dim, 1> getVelocity(double t) const
+  Eigen::Matrix<double, Dim, 1> getVelocity(double t)
   {
     Eigen::Matrix<double, Dim, 1> vel = Eigen::Matrix<double, Dim, 1>::Zero();
     for (int i = 0; i < Dim; i++)
@@ -39,7 +39,7 @@ public:
     return vel;
   }
 
-  Eigen::Matrix<double, Dim, 1> getAcceleration(double t) const
+  Eigen::Matrix<double, Dim, 1> getAcceleration(double t)
   {
     Eigen::Matrix<double, Dim, 1> acc = Eigen::Matrix<double, Dim, 1>::Zero();
     for (int i = 0; i < Dim; i++)
@@ -60,4 +60,4 @@ protected:
 
 } // namespace ucb_jaco_control
 
-#endif // UCB_JACO_CONTROL_SINUSOID_TRAJECTORY_H
+#endif // UCB_JACO_CONTROL_SINUSOIDAL_TRAJECTORY_H

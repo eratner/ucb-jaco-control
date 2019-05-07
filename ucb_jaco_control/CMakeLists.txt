@@ -247,6 +247,12 @@ if (TARGET constant_trajectory_test)
   target_link_libraries(constant_trajectory_test ${catkin_LIBRARIES})
 endif()
 
+catkin_add_gtest(sinusoidal_trajectory_test test/test_sinusoidal_trajectory.cpp)
+if (TARGET sinusoidal_trajectory_test)
+  set(CMAKE_BUILD_TYPE Debug)
+  target_link_libraries(sinusoidal_trajectory_test ${catkin_LIBRARIES})
+endif()
+
 catkin_add_gtest(robot_dynamics_test test/test_robot_dynamics.cpp)
 if (TARGET robot_dynamics_test)
   target_link_libraries(robot_dynamics_test ${catkin_LIBRARIES})
