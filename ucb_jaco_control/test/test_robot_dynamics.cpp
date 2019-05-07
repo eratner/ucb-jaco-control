@@ -25,7 +25,7 @@ TEST(RobotDynamics, testLoadURDF)
   }
 
   Eigen::Matrix<double, 7, 1> pos;
-  pos << 0, 0, 0, 0, 0, 0, 0;
+  pos << 0, M_PI_2, 0, 0, 0, 0, 0;
   Eigen::Matrix<double, 7, 7> M = dynamics->getInertiaMatrix(pos);
   std::cout << "%% Inertia Matrix: " << std::endl;
   std::cout << M << std::endl;
@@ -42,6 +42,11 @@ TEST(RobotDynamics, testLoadURDF)
 
   delete dynamics;
   dynamics = nullptr;
+}
+
+TEST(RobotDynamics, controlledRobotDynamics)
+{
+  // TODO: Write test with URDF dynamics + integrator + PID CTC
 }
 
 int main(int argc, char *argv[])

@@ -5,16 +5,27 @@ namespace ucb_jaco_control
 {
 
 TestControllerROS::TestControllerROS()
-  : controller_({P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN},
-                {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN},
-                {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
-                PIDRegulationController<7>::StateVector::Zero(),
-                true)
+  : dynamics_(nullptr), desired_trajectory_(nullptr), controller_(nullptr)
 {
+  // controller_ = new PIDRegulationController<7>(
+  //   {P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN},
+  //   {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN},
+  //   {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN},
+  //   PIDRegulationController<7>::StateVector::Zero(),
+  //   true);
 }
 
 TestControllerROS::~TestControllerROS()
 {
+  delete controller_;
+  controller_ = nullptr;
+
+  delete dynamics_;
+  dynamics_ = nullptr;
+
+  delete desired_trajectory_;
+  desired_trajectory_ = nullptr;
+
   delete server_;
   server_ = nullptr;
 }
@@ -45,10 +56,46 @@ bool TestControllerROS::init(hardware_interface::EffortJointInterface* hw,
     }
   }
 
+  // HACK: Replace this with parameters.
+  std::string urdf_file = "/home/eratner/j2s7s300.urdf";
+  std::string root_name = "j2s7s300_link_base";
+  std::string tip_name  = "j2s7s300_end_effector";
+
+  // Construct the dynamics model from URDF file.
+  try
+  {
+    dynamics_ = new ucb_jaco_control::URDFRobotDynamics<7>(urdf_file, root_name, tip_name);
+  }
+  catch (const std::exception &e)
+  {
+    ROS_ERROR_STREAM("Failed to construct dynamics: " << e.what());
+    return false;
+  }
+
+  // TODO: Allow client to specify desired trajectory somehow.
+  Eigen::Matrix<double, 7, 1> setpoint;
+  // setpoint << 0.0, M_PI_2, 0.0, M_PI_2, 0.0, M_PI_2, 0.0;
+  setpoint << 0, 0, 0, 0, 0, 0, 0;
+  desired_trajectory_ = new ConstantTrajectory<7>(setpoint);
+
+  // Construct the controller using this dynamics model.
+  std::array<double, 7> default_proportional_gain =
+    {P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN, P_GAIN};
+  std::array<double, 7> default_integral_gain =
+    {I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN, I_GAIN};
+  std::array<double, 7> default_derivative_gain =
+    {D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN, D_GAIN};
+
+  controller_ = new PIDComputedTorqueController<7>(default_proportional_gain,
+                                                   default_integral_gain,
+                                                   default_derivative_gain,
+                                                   dynamics_,
+                                                   desired_trajectory_);
+
   // TODO: Implement a topic/service for the commanded setpoint.
-  PIDRegulationController<7>::StateVector setpoint;
-  setpoint << 0.0, M_PI_2, 0.0, M_PI_2, 0.0, M_PI_2, 0.0;
-  controller_.setSetpoint(setpoint);
+  // PIDRegulationController<7>::StateVector setpoint;
+  // setpoint << 0.0, M_PI_2, 0.0, M_PI_2, 0.0, M_PI_2, 0.0;
+  // controller_->setSetpoint(setpoint);
 
   // Publisher for the errors.
   error_pub_ = nh.advertise<std_msgs::Float64MultiArray>("errors", 1);
@@ -57,7 +104,7 @@ bool TestControllerROS::init(hardware_interface::EffortJointInterface* hw,
   server_ = new dynamic_reconfigure::Server<PIDGainsConfig>(nh);
   server_->setCallback(boost::bind(&TestControllerROS::pidGainsCallback, this, _1, _2));
 
-  ROS_INFO_STREAM("Setpoint is " << controller_.getSetpoint());
+  // ROS_INFO_STREAM("Setpoint is " << controller_.getSetpoint());
 
   return true;
 }
@@ -66,26 +113,37 @@ void TestControllerROS::starting(ros::Time& time)
 {
   ROS_INFO_STREAM("Starting test controller at time " << time);
 
-  controller_.reset();
+  controller_->reset();
 }
 
 void TestControllerROS::update(const ros::Time& time, const ros::Duration& period)
 {
-  PIDRegulationController<7>::AugmentedStateVector state;
+  // PIDRegulationController<7>::AugmentedStateVector state;
+  PIDComputedTorqueController<7>::StateVector state;
   for (int i = 0; i < 7; ++i)
     state(i) = joint_handle_[i].getPosition();
   for (int i = 0; i < 7; ++i)
     state(i + 7) = joint_handle_[i].getVelocity();
 
-  const double dt = period.toSec();
-  PIDRegulationController<7>::ControlVector control = controller_.getControl(state, dt);
+  const double t = time.toSec();
+  // PIDRegulationController<7>::ControlVector control = controller_->getControl(state, dt);
+  PIDComputedTorqueController<7>::ControlVector control = controller_->getControl(state, t);
+
+  const Eigen::Matrix<double, 7, 1>& error = controller_->getError();
+
+  ROS_INFO("%%%%%%%%%%");
+  ROS_INFO("\tError \tControl");
+  for (int i = 0; i < 7; ++i)
+  {
+    ROS_INFO_STREAM("\t" << error(i) << " \t" << control(i));
+  }
 
   for (int i = 0; i < 7; ++i)
     joint_handle_[i].setCommand(control(i));
 
   // Publish the errors.
   std_msgs::Float64MultiArray error_msg;
-  const PIDRegulationController<7>::StateVector& error = controller_.getError();
+
   for (int i = 0; i < 7; ++i)
     error_msg.data.push_back(error(i));
 
@@ -105,15 +163,15 @@ void TestControllerROS::pidGainsCallback(PIDGainsConfig& config, uint32_t level)
 
   std::array<double, 7> p_gain;
   p_gain.fill(config.p_gain);
-  controller_.setProportionalGain(p_gain);
+  controller_->setProportionalGain(p_gain);
 
   std::array<double, 7> i_gain;
   i_gain.fill(config.i_gain);
-  controller_.setIntegralGain(i_gain);
+  controller_->setIntegralGain(i_gain);
 
   std::array<double, 7> d_gain;
   d_gain.fill(config.d_gain);
-  controller_.setDerivativeGain(d_gain);
+  controller_->setDerivativeGain(d_gain);
 }
 
 } // namespace ucb_jaco_control

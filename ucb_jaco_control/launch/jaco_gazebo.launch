@@ -1,7 +1,7 @@
 <launch>
   <!-- Launch Gazebo simulator -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find kinova_gazebo)/worlds/jaco.world" />
+    <arg name="world_name" value="$(find kinova_gazebo)/worlds/jaco.world" /> <!-- TODO: Replace with our own world --> 
     <arg name="debug" value="false" />
     <arg name="gui" value="false" />
     <arg name="paused" value="true" />

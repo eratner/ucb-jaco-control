@@ -4,13 +4,17 @@
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <ucb_jaco_control/pid_regulation_controller.h>
+#include <ucb_jaco_control/pid_computed_torque_controller.h>
+#include <ucb_jaco_control/urdf_robot_dynamics.h>
+#include <ucb_jaco_control/constant_trajectory.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <dynamic_reconfigure/server.h>
 #include <ucb_jaco_control/PIDGainsConfig.h>
 #include <cmath>
 
 #define P_GAIN 50.0
-#define D_GAIN 0.0
+// #define D_GAIN 0.0
+#define D_GAIN 10.0
 #define I_GAIN 0.0
 
 namespace ucb_jaco_control
@@ -38,7 +42,11 @@ private:
 
   std::vector<hardware_interface::JointHandle> joint_handle_;
 
-  PIDRegulationController<7>                   controller_;
+  RobotDynamics<7>*                            dynamics_;
+  ConstantTrajectory<7>*                       desired_trajectory_;
+
+  // PIDRegulationController<7>*                  controller_;
+  PIDComputedTorqueController<7>*              controller_;
 
   ros::Publisher                               error_pub_;
 
