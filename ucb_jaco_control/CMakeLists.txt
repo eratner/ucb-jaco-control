@@ -150,8 +150,8 @@ add_library(${UCB_JACO_CONTROL_ROS}
 target_link_libraries(${UCB_JACO_CONTROL_ROS} ${catkin_LIBRARIES})
 add_dependencies(${UCB_JACO_CONTROL_ROS} ${PROJECT_NAME}_gencfg)
 
-# add_executable(test_robot_dynamics_node src/test_robot_dynamics_node.cpp)
-# target_link_libraries(test_robot_dynamics_node ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+add_executable(jaco_simulator_ros src/jaco_simulator_ros.cpp)
+target_link_libraries(jaco_simulator_ros ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 
 # Library containing core controllers.
 #add_library(${UCB_JACO_CONTROL} INTERFACE)

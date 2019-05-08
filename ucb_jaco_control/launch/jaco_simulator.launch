@@ -1,0 +1,13 @@
+<launch>
+  <!-- Load the URDF onto the parameter server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find kinova_description)/urdf/j2s7s300_standalone.xacro'" />
+
+  <!-- Joint states to TF for visualization of robot in RViz -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">    
+    <remap from="/joint_states" to="/jaco_simulator/joint_states" />    
+  </node>
+
+  <node name="jaco_simulator" pkg="ucb_jaco_control" type="jaco_simulator_ros" />
+</launch>
