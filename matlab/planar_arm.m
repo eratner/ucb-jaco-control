@@ -13,8 +13,8 @@ num_trials = 1;
 noisy = false;
 saturation = true;
 saturation_value = 30;
-disturbance = 'none';
-constant_disturbance = [1; 1];
+disturbance = 'constant';
+constant_disturbance = [5; 5];
 gaussian_disturbance = @(t) [sin(t); sin(t)];
 control_torques = [];
 previous_t = 0; error_integral = zeros(2, 1);
@@ -22,17 +22,17 @@ previous_t = 0; error_integral = zeros(2, 1);
 figure(1);
 plot_errors(@fb_linearization);
 
-figure(2);
-plot_errors(@sliding_mode);
-
-figure(3);
-plot_errors(@backstepping);
-
-figure(4);
-plot_errors_adaptive(@adaptive_control);
-
-figure(5);
-plot_errors(@pid);
+% figure(2);
+% plot_errors(@sliding_mode);
+% 
+% figure(3);
+% plot_errors(@backstepping);
+% 
+% figure(4);
+% plot_errors_adaptive(@adaptive_control);
+% 
+% figure(5);
+% plot_errors(@pid);
 
 function subs = subsample(list1, list2)
     step = floor(length(list2) / length(list1));
@@ -61,7 +61,11 @@ end
 
 function os = overshoot(response)
     [peaks, ~] = findpeaks(response);
-    os = max(0, peaks(1)-0) / 1 * 100;
+    if length(peaks) < 1
+        os = 0;
+    else
+        os = max(0, peaks(1)-0) / 1 * 100;
+    end
 end
 
 function plot_errors(controller)
@@ -292,15 +296,21 @@ function torque = backstepping(t, x, M, V, G, C)
 end
 
 function torque = fb_linearization(t, x, M, V, G, C)
-    global q_des q_des_dot;
-    Kp = 200*eye(2);
-    Kd = 5*eye(2);
+    global q_des q_des_dot error_integral previous_t;
+    Kp = 500*eye(2);
+    Kd = 200*eye(2);
+    Ki = 200*eye(2);
+%     Ki = 0*eye(2);
     q = [x(1); x(2)];
     qdot = [x(3); x(4)];
     qbar = q - q_des(t);
     qbar_dot = qdot - q_des_dot(t);
     
-    u = -Kp * qbar - Kd*qbar_dot;
+    error = q - q_des(t);
+    error_integral = error_integral + error*(t - previous_t);
+    previous_t = t;
+    
+    u = -Kp * qbar - Kd*qbar_dot - Ki*error_integral;
     torque = V + G + M*u;
 end
 
