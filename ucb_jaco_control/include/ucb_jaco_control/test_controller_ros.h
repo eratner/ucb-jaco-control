@@ -17,6 +17,10 @@
 #define D_GAIN 10.0
 #define I_GAIN 0.0
 
+#define AMPLITUDE 1.0
+#define FREQUENCY 1.0
+#define PHASE     1.0
+
 namespace ucb_jaco_control
 {
 
