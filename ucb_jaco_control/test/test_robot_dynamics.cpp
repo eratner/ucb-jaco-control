@@ -48,6 +48,28 @@ TEST(RobotDynamics, testLoadURDF)
   std::cout << "%% Gravity Vector: " << std::endl;
   std::cout << G << std::endl;
 
+  std::array<std::string, 7> link_names =
+  {
+    "j2s7s300_link_1",
+    "j2s7s300_link_2",
+    "j2s7s300_link_3",
+    "j2s7s300_link_4",
+    "j2s7s300_link_5",
+    "j2s7s300_link_6",
+    "j2s7s300_link_7"
+  };
+
+  for (const std::string& ln : link_names)
+  {
+    std::cout << "Mass of " << ln << ": "
+              << static_cast<ucb_jaco_control::URDFRobotDynamics<7>*>(dynamics)->getLinkMass(ln)
+              << std::endl;
+  }
+
+  static_cast<ucb_jaco_control::URDFRobotDynamics<7>*>(dynamics)->setLinkMass("j2s7s300_link_1", 5.0);
+  std::cout << "Mass changed to "
+            << static_cast<ucb_jaco_control::URDFRobotDynamics<7>*>(dynamics)->getLinkMass("j2s7s300_link_1") << std::endl;
+
   delete dynamics;
   dynamics = nullptr;
 }
@@ -223,6 +245,7 @@ TEST(RobotDynamics, controlledRobotDynamicsSinusoid)
   ucb_jaco_control::SinusoidalTrajectory<N>* desired_trajectory =
     new ucb_jaco_control::SinusoidalTrajectory<N>({0., 0.2, 0., 0., 0., 0., 0.},
       {1., 1., 1., 1., 1., 1., 1.},
+      {0., 0., 0., 0., 0., 0., 0.},
       {0., 0., 0., 0., 0., 0., 0.});
 
   std::array<double, N> p_gain;
@@ -283,11 +306,11 @@ TEST(RobotDynamics, controlledRobotDynamicsSinusoid)
    for (int i = 0; i < N; ++i)
    {
      std::vector<double> p;
-     for (auto &ps : pos)
+     for (auto& ps : pos)
        p.push_back(ps[i]);
 
      std::vector<double> dp;
-     for (auto &dps : des_pos)
+     for (auto& dps : des_pos)
        dp.push_back(dps[i]);
 
      plt::named_plot("J" + std::to_string(i) + " pos", times, p);

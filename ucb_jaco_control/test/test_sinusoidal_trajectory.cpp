@@ -10,7 +10,8 @@ TEST(SinusoidalTrajectory, testMultiDimSinusoid)
 {
   ucb_jaco_control::SinusoidalTrajectory<3> trajectory({1., 2., 2.},
                                                        {0., 1., 1.},
-                                                       {0., 0., M_PI_2});
+                                                       {0., 0., M_PI_2},
+                                                       {0., 0., 0.});
 
   std::vector<double> sin1;
   std::vector<double> sin2;

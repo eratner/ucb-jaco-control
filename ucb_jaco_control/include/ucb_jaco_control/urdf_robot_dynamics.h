@@ -5,6 +5,7 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <kdl/chaindynparam.hpp>
 #include <kdl/jntspaceinertiamatrix.hpp>
+#include <urdf/model.h>
 #include <exception>
 #include <iostream>
 
@@ -21,26 +22,57 @@ public:
   URDFRobotDynamics(const std::string& urdf_file,
                     const std::string& root_name,
                     const std::string& tip_name)
+    : root_name_(root_name), tip_name_(tip_name), dynamic_params_(nullptr)
   {
-    KDL::Tree tree;
-    if (!kdl_parser::treeFromFile(urdf_file, tree))
+    if (!urdf_model_.initFile(urdf_file))
       throw std::invalid_argument("Could not read URDF file " + urdf_file);
 
-    // for (auto s : tree.getSegments())
-    //   std::cout << s.first << std::endl;
+    std::vector<urdf::LinkSharedPtr> links;
+    urdf_model_.getLinks(links);
+    for (urdf::LinkSharedPtr l : links)
+      std::cout << l->name << std::endl;
 
-    KDL::Chain chain;
-    if (!tree.getChain("j2s7s300_link_base",
-                       "j2s7s300_end_effector",
-                       chain))
+    buildDynamicsModel();
+  }
+
+  double getLinkMass(const std::string& link_name) const
+  {
+    auto link = urdf_model_.getLink(link_name);
+    if (link)
+      return link->inertial->mass;
+
+    throw std::invalid_argument("Could not get link " + link_name);
+  }
+
+  void setLinkMass(const std::string& link_name, double mass)
+  {
+    urdf::LinkSharedPtr link;
+    urdf_model_.getLink(link_name, link);
+    if (link)
+      link->inertial->mass = mass;
+    else
+      throw std::invalid_argument("Could not get link " + link_name);
+
+    // Need to update the dynamics model.
+    buildDynamicsModel();
+  }
+
+  void setLinkMasses(const std::vector<std::string>& link_names,
+                     const std::vector<double>&      masses)
+  {
+    // TODO Check to make sure link_masses.size() == masses.size().
+    for (int i = 0; i < link_names.size(); ++i)
     {
-      throw std::invalid_argument("Could not get chain with root " + root_name +
-                                  " and tip " + tip_name);
+      urdf::LinkSharedPtr link;
+      urdf_model_.getLink(link_names[i], link);
+      if (link)
+        link->inertial->mass = masses[i];
+      else
+        throw std::invalid_argument("Could not get link " + link_names[i]);
     }
 
-    // TODO: Is this correct? Make into a parameter.
-    KDL::Vector gravity(0.0, 0.0, -9.8);
-    dynamic_params_ = new KDL::ChainDynParam(chain, gravity);
+    // Need to update the dynamics model.
+    buildDynamicsModel();
   }
 
   ~URDFRobotDynamics()
@@ -93,12 +125,40 @@ public:
 
   virtual Vector getFrictionVector(const Vector& vel)
   {
-    // Subclass to add custom frictional forces. 
+    // Subclass to add custom frictional forces.
     return Vector::Zero();
   }
 
 private:
-  KDL::ChainDynParam *dynamic_params_;
+  void buildDynamicsModel()
+  {
+    KDL::Tree tree;
+    if (!kdl_parser::treeFromUrdfModel(urdf_model_, tree))
+      throw std::invalid_argument("Could not parse KDL from URDF model");
+
+    KDL::Chain chain;
+    if (!tree.getChain(root_name_, tip_name_, chain))
+    {
+      throw std::invalid_argument("Could not get chain with root " + root_name_ +
+                                  " and tip " + tip_name_);
+    }
+
+    // TODO: Do we need to delete and reconstruct?
+    if (dynamic_params_)
+    {
+      delete dynamic_params_;
+      dynamic_params_ = nullptr;
+    }
+
+    // TODO: Is this correct? Make into a parameter.
+    KDL::Vector gravity(0.0, 0.0, -9.8);
+    dynamic_params_ = new KDL::ChainDynParam(chain, gravity);
+  }
+
+  urdf::Model         urdf_model_;
+  std::string         root_name_;
+  std::string         tip_name_;
+  KDL::ChainDynParam* dynamic_params_;
 
 };
 

@@ -30,6 +30,16 @@ public:
     return getInnerLoopControl(state, t);
   }
 
+  Trajectory<Dim>* getDesiredTrajectory()
+  {
+    return desired_trajectory_;
+  }
+
+  void setDesiredTrajectory(Trajectory<Dim>* desired_trajectory)
+  {
+    desired_trajectory_ = desired_trajectory;
+  }
+
 protected:
   virtual ControlVector getInnerLoopControl(const StateVector& state, double t)
   {

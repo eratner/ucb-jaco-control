@@ -9,5 +9,5 @@
     <remap from="/joint_states" to="/jaco_simulator/joint_states" />    
   </node>
 
-  <node name="jaco_simulator" pkg="ucb_jaco_control" type="jaco_simulator_ros" />
+  <node name="jaco_simulator" pkg="ucb_jaco_control" type="jaco_simulator_ros" output="screen" />
 </launch>

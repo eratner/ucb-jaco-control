@@ -86,6 +86,11 @@ public:
     return count_;
   }
 
+  int capacity() const
+  {
+    return size_;
+  }
+
   void clear()
   {
     count_ = 0;

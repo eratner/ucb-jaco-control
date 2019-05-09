@@ -110,6 +110,7 @@ set(UCB_JACO_CONTROL ucb_jaco_control)
 
 generate_dynamic_reconfigure_options(
   config/PIDGains.cfg
+  config/DynamicsModelParams.cfg
 )
 
 ###################################
@@ -152,6 +153,7 @@ add_dependencies(${UCB_JACO_CONTROL_ROS} ${PROJECT_NAME}_gencfg)
 
 add_executable(jaco_simulator_ros src/jaco_simulator_ros.cpp)
 target_link_libraries(jaco_simulator_ros ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+add_dependencies(jaco_simulator_ros ${PROJECT_NAME}_gencfg)
 
 # Library containing core controllers.
 #add_library(${UCB_JACO_CONTROL} INTERFACE)

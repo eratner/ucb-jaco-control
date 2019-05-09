@@ -13,8 +13,9 @@ class SinusoidalTrajectory : public Trajectory<Dim>
 public:
   SinusoidalTrajectory(const std::array<double, Dim>& amplitude,
                        const std::array<double, Dim>& frequency,
-                       const std::array<double, Dim>& phase)
-    : amplitude_(amplitude), frequency_(frequency), phase_(phase)
+                       const std::array<double, Dim>& phase,
+                       const std::array<double, Dim>& offset)
+    : amplitude_(amplitude), frequency_(frequency), phase_(phase), offset_(offset)
   {
   }
 
@@ -22,7 +23,7 @@ public:
   {
     Eigen::Matrix<double, Dim, 1> pos = Eigen::Matrix<double, Dim, 1>::Zero();
     for (int i = 0; i < Dim; i++)
-      pos(i) = amplitude_[i] * sin(frequency_[i] * t + phase_[i]);
+      pos(i) = offset_[i] + amplitude_[i] * sin(frequency_[i] * t + phase_[i]);
 
     return pos;
   }
@@ -55,6 +56,7 @@ protected:
   std::array<double, Dim> amplitude_;
   std::array<double, Dim> frequency_;
   std::array<double, Dim> phase_;
+  std::array<double, Dim> offset_;
 
 };
 
